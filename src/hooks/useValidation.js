@@ -68,7 +68,6 @@ const useValidation = () => {
     nameValidation,
     passwordValidation,
     errors,
-    setErrors,
   };
 };
 

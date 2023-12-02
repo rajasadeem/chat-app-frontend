@@ -1,25 +1,16 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-import { BASE_URL } from "../variables";
-import { toast } from "react-toastify";
+import { BASE_URL, GET_USER, LOGIN, SIGNUP } from "../variables";
 
 export const signupApi = (payload, success, fail) => async (dispatch) => {
   try {
     const response = await axios({
       method: "post",
-      url: `${BASE_URL}user/register`,
+      url: `${BASE_URL}${SIGNUP}`,
       data: payload,
     });
-
-    if (response?.status === 201) {
-      success && success(response);
-    }
+    if (response?.status === 201) success && success(response);
   } catch (error) {
-    if (error?.response?.status === 400) {
-      fail && fail(error?.response);
-    } else {
-      toast.error("Server Error: " + error.response.status);
-    }
+    fail && fail(error?.response);
   }
 };
 
@@ -27,53 +18,31 @@ export const loginApi = (payload, success, fail) => async (dispatch) => {
   try {
     const response = await axios({
       method: "post",
-      url: `${BASE_URL}user/login`,
+      url: `${BASE_URL}${LOGIN}`,
       data: payload,
     });
-
-    if (response?.status === 200) {
-      success && success(response);
-    }
+    if (response?.status === 200) success && success(response);
   } catch (error) {
-    if (error?.response?.status === 400) {
-      fail && fail(error?.response);
-    } else {
-      toast.error("Server Error: " + error.response.status);
-    }
+    fail && fail(error?.response);
   }
 };
+
 export const getUserDataApi =
   (id, token, success, fail) => async (dispatch) => {
     try {
-      let response;
-      if (id) {
-        response = await axios({
-          method: "post",
-          url: `${BASE_URL}user/${id}`,
-          headers: {
-            "Content-Type": "Application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } else {
-        response = await axios({
-          method: "post",
-          url: `${BASE_URL}user/`,
-          headers: {
-            "Content-Type": "Application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
+      let URL;
+      id ? (URL = `${GET_USER}?id=${id}`) : (URL = `${GET_USER}`);
 
-      if (response?.status === 200) {
-        success && success(response);
-      }
+      const response = await axios({
+        method: "get",
+        url: `${BASE_URL}${URL}`,
+        headers: {
+          "Content-Type": "Application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response?.status === 200) success && success(response);
     } catch (error) {
-      if (error?.response?.status === 400) {
-        fail && fail(error?.response);
-      } else {
-        toast.error("Server Error: " + error.response.status);
-      }
+      fail && fail(error?.response);
     }
   };

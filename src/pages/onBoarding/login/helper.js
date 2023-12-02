@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../../../redux/slice/user.slice";
@@ -56,8 +56,8 @@ const useLogin = () => {
       dispatch(setUser(response?.data?.data?.user));
       toast.success(response?.data?.message);
       Cookies.set("token", response?.data?.data?.token);
-      Cookies.set("userId", response?.data?.data?.user?.id);
-      navigate("/chat");
+      Cookies.set("userId", response?.data?.data?.user?._id);
+      navigate("/home");
     };
     let fail = (response) => {
       setLoading(false);
