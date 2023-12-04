@@ -10,6 +10,7 @@ const InputField = ({
   className,
   type,
   name,
+  customStyle,
 }) => {
   return (
     <div className={`flex flex-col gap-y-2 ${className}`}>
@@ -18,7 +19,7 @@ const InputField = ({
         name={name}
         value={value}
         placeholder={placeholder}
-        className={`h-[2rem] border rounded-md focus: outline-none text-xs text-slate-700 px-2`}
+        className={`h-[2rem] border rounded-md focus: outline-none text-xs text-slate-700 px-2 ${customStyle}`}
         onChange={onChange}
         onKeyDown={onKeyDown}
         type={type}

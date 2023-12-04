@@ -1,6 +1,9 @@
 //BASE URL
 export const BASE_URL = "http://localhost:8000/";
 
+//SOCKET URL
+export const SOCKET_URL = "http://localhost:8000";
+
 //AUTH
 export const SIGNUP = "user/register/";
 export const LOGIN = "user/login/";

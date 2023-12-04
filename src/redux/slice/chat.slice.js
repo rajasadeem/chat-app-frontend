@@ -5,6 +5,10 @@ const initialState = {
   active_chat: [],
 };
 
+const add = (payload, data) => {
+  return [...data, payload];
+};
+
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
@@ -15,10 +19,14 @@ export const chatSlice = createSlice({
     setActiveChat: (state, action) => {
       state.active_chat = action.payload;
     },
+    addNewMessageToChat: (state, action) => {
+      state.active_chat = add(action.payload, state.active_chat);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setAllChats, setActiveChat } = chatSlice.actions;
+export const { setAllChats, setActiveChat, addNewMessageToChat } =
+  chatSlice.actions;
 
 export default chatSlice.reducer;

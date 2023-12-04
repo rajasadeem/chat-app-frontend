@@ -3,11 +3,14 @@ import { setActiveChat, setAllChats } from "../../redux/slice/chat.slice";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import { getActiveChatApi, getAllChatsApi } from "../../apis/chat";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { socket } from "../../context";
 
 const useChat = () => {
   const dispatch = useDispatch();
 
+  const chatContainerRef = useRef(null);
   const state = useSelector((state) => state);
   const user = state?.user?.user_data;
   const chats = state?.chat?.all_chats;
@@ -18,6 +21,10 @@ const useChat = () => {
 
   const [loading, setLoading] = useState(false);
   const [roomId, setRoomId] = useState("");
+  const [searchParam, setSearchParam] = useSearchParams();
+  const [message, setMessage] = useState("");
+
+  const queryParam = searchParam.get("roomId");
 
   const fetchAllChats = () => {
     setLoading(true);
@@ -37,16 +44,43 @@ const useChat = () => {
   }, []);
 
   const getActiveChat = () => {
+    let chatId = roomId ? roomId : queryParam;
     let success = (response) => dispatch(setActiveChat(response?.data?.data));
     let fail = (response) => toast.error(response?.data?.message);
-    dispatch(getActiveChatApi(token, roomId, success, fail));
+    dispatch(getActiveChatApi(token, chatId, success, fail));
   };
 
   useEffect(() => {
-    if (roomId) {
+    if (roomId || queryParam) {
       getActiveChat();
     }
   }, [roomId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [activeChat]);
+
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  };
+
+  const onChangeMessageHandler = (e) => setMessage(e.target.value);
+
+  const sendMessageHandler = () => {
+    const receiver = queryParam
+      ? queryParam.replace(userId, "")
+      : roomId.replace(userId, "");
+    const payload = {
+      message,
+      receiver,
+      sender: userId,
+    };
+    socket.emit("sendMessage", payload);
+    setMessage("");
+  };
 
   return {
     user,
@@ -54,6 +88,13 @@ const useChat = () => {
     setRoomId,
     activeChat,
     userId,
+    loading,
+    setSearchParam,
+    queryParam,
+    chatContainerRef,
+    onChangeMessageHandler,
+    sendMessageHandler,
+    message,
   };
 };
 
